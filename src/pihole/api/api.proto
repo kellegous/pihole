@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package api;
+
+service Api {
+  rpc Register (stream RegisterReq) returns (stream RegisterRes) {}
+}
+
+message RegisterReq {
+  repeated string hosts = 1;
+  string addr = 2;
+}
+
+
+message RegisterRes {
+  string message = 1;
+}
