@@ -1,0 +1,10 @@
+[Unit]
+Description=Pihole Proxy Client
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/pihole --conf=/var/pihole
+User=www-data
+
+[Install]
+WantedBy=multi-user.target

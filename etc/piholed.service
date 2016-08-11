@@ -1,0 +1,9 @@
+[Unit]
+Description=Pihole Proxy Server
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/piholed
+
+[Install]
+WantedBy=multi-user.target
