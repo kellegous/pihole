@@ -7,6 +7,7 @@ import (
 
 	"pihole/api"
 	"pihole/client/config"
+	"pihole/logging"
 
 	"github.com/golang/glog"
 	"golang.org/x/crypto/ssh"
@@ -93,7 +94,8 @@ func ConnectAndServe(cfg *config.Config) error {
 
 	go func() {
 		srv := http.Server{
-			Handler: httputil.NewSingleHostReverseProxy(cfg.ToURL),
+			Handler: logging.WithLog(
+				httputil.NewSingleHostReverseProxy(cfg.ToURL)),
 		}
 
 		ch <- srv.Serve(l)

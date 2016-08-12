@@ -1,8 +1,7 @@
 package main
 
 import (
-	"os"
-	"strings"
+	"flag"
 
 	"pihole/client/cmd/connect"
 	"pihole/client/cmd/createconfig"
@@ -10,19 +9,25 @@ import (
 )
 
 func main() {
-	args := os.Args
+	flagConf := flag.String(
+		"conf",
+		"pihole",
+		"")
+	flag.Parse()
 
-	if len(args) == 1 || strings.HasPrefix(os.Args[1], "-") {
-		connect.Main(args[1:])
+	args := flag.Args()
+
+	if flag.NArg() == 0 {
+		connect.Main(*flagConf, args)
 		return
 	}
 
-	switch args[1] {
+	switch args[0] {
 	case connect.Name:
-		connect.Main(args[2:])
+		connect.Main(*flagConf, args[1:])
 	case createconfig.Name:
-		createconfig.Main(args[2:])
+		createconfig.Main(*flagConf, args[1:])
 	case getkey.Name:
-		getkey.Main(args[2:])
+		getkey.Main(*flagConf, args[1:])
 	}
 }

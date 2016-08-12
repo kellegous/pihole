@@ -1,7 +1,6 @@
 package createconfig
 
 import (
-	"flag"
 	"fmt"
 	"net/url"
 	"os"
@@ -39,13 +38,9 @@ func create(cfg *config.Config, addr, toURL string, hosts []string) error {
 }
 
 // Main ...
-func Main(args []string) {
+func Main(conf string, args []string) {
 	// create-config pihole.com localhost kpi.kellegous.com kpi.kellego.us
-	f := flag.NewFlagSet(Name, flag.ExitOnError)
-	flagConf := f.String("conf", "pihole", "")
-	f.Parse(args)
-
-	if f.NArg() < 3 {
+	if len(args) < 3 {
 		usage()
 	}
 
@@ -54,7 +49,7 @@ func Main(args []string) {
 		glog.Fatal(err)
 	}
 
-	if err := cfg.Create(*flagConf); err != nil {
+	if err := cfg.Create(conf); err != nil {
 		glog.Fatal(err)
 	}
 

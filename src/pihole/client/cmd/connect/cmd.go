@@ -1,7 +1,6 @@
 package connect
 
 import (
-	"flag"
 	"time"
 
 	"pihole/client/config"
@@ -14,16 +13,9 @@ import (
 const Name = "connect"
 
 // Main ...
-func Main(args []string) {
-	f := flag.NewFlagSet(Name, flag.PanicOnError)
-	flagConfg := f.String(
-		"conf",
-		"pihole",
-		"")
-	f.Parse(args)
-
+func Main(conf string, args []string) {
 	var cfg config.Config
-	if err := cfg.Read(*flagConfg); err != nil {
+	if err := cfg.Read(conf); err != nil {
 		glog.Fatal(err)
 	}
 

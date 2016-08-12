@@ -1,7 +1,6 @@
 package getkey
 
 import (
-	"flag"
 	"fmt"
 
 	"pihole/client/config"
@@ -13,13 +12,9 @@ import (
 const Name = "get-key"
 
 // Main ...
-func Main(args []string) {
-	f := flag.NewFlagSet(Name, flag.ExitOnError)
-	flagConf := f.String("conf", "pihole", "Path to config")
-	f.Parse(args)
-
+func Main(conf string, args []string) {
 	var cfg config.Config
-	if err := cfg.Read(*flagConf); err != nil {
+	if err := cfg.Read(conf); err != nil {
 		glog.Fatal(err)
 	}
 

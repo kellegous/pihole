@@ -53,36 +53,12 @@ func (h *Hub) get(host string) http.Handler {
 	return h.routes[host]
 }
 
-type response struct {
-	http.ResponseWriter
-	status int
-}
-
-func (r *response) WriteHeader(status int) {
-	r.status = status
-	r.ResponseWriter.WriteHeader(status)
-}
-
-func (r *response) log(req *http.Request) {
-	glog.Infof("addr=%s code=%d method=%s host=%s uri=%s",
-		req.RemoteAddr,
-		r.status,
-		req.Method,
-		req.Host,
-		req.RequestURI)
-}
-
 // ServeHTTP ...
 func (h *Hub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	res := response{
-		ResponseWriter: w,
-	}
-	defer res.log(r)
-
 	rt := h.get(r.Host)
 	if rt == nil {
-		http.NotFound(&res, r)
+		http.NotFound(w, r)
 		return
 	}
-	rt.ServeHTTP(&res, r)
+	rt.ServeHTTP(w, r)
 }

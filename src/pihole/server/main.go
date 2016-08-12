@@ -6,6 +6,7 @@ import (
 
 	"pihole/api"
 	"pihole/hub"
+	"pihole/logging"
 
 	"github.com/golang/glog"
 )
@@ -20,5 +21,7 @@ func main() {
 	}()
 
 	glog.Infof("Web: %s", *flagAddr)
-	glog.Fatal(http.ListenAndServe(*flagAddr, h))
+	glog.Fatal(http.ListenAndServe(
+		*flagAddr,
+		logging.WithLog(h)))
 }
