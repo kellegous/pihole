@@ -2,11 +2,12 @@ package connect
 
 import (
 	"flag"
-	"log"
 	"time"
 
 	"pihole/client/config"
 	"pihole/client/proxy"
+
+	"github.com/golang/glog"
 )
 
 // Name ...
@@ -23,12 +24,12 @@ func Main(args []string) {
 
 	var cfg config.Config
 	if err := cfg.Read(*flagConfg); err != nil {
-		log.Panic(err)
+		glog.Fatal(err)
 	}
 
 	for {
 		if err := proxy.ConnectAndServe(&cfg); err != nil {
-			log.Println(err)
+			glog.Error(err)
 		}
 
 		time.Sleep(10 * time.Second)

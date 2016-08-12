@@ -2,13 +2,13 @@ package proxy
 
 import (
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/http/httputil"
 
 	"pihole/api"
 	"pihole/client/config"
 
+	"github.com/golang/glog"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/net/context"
 )
@@ -50,6 +50,7 @@ func register(c *ssh.Client, cfg *config.Config, addr string) error {
 	if err := s.Send(&api.RegisterReq{
 		Hosts: cfg.Hosts,
 		Addr:  addr,
+		Id:    cfg.ID,
 	}); err != nil {
 		return err
 	}
@@ -60,7 +61,7 @@ func register(c *ssh.Client, cfg *config.Config, addr string) error {
 			return err
 		}
 
-		log.Println(m)
+		glog.Infof("msg=%s", m)
 	}
 }
 
@@ -81,7 +82,7 @@ func ConnectAndServe(cfg *config.Config) error {
 	}
 	defer c.Close()
 
-	log.Printf("connected: %s", cfg.Hub.Addr)
+	glog.Infof("Connected to %s", cfg.Hub.Addr)
 
 	l, err := c.Listen("tcp", "localhost:0")
 	if err != nil {

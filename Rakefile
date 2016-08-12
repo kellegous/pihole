@@ -16,6 +16,7 @@ GODEPS = go_get('src', [
 	'golang.org/x/crypto/ssh/agent',
 	'github.com/golang/protobuf/...',
 	'google.golang.org/grpc',
+	'github.com/golang/glog'
 ])
 
 PROTOS = protoc('src/pihole')

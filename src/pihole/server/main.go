@@ -2,11 +2,12 @@ package main
 
 import (
 	"flag"
-	"log"
 	"net/http"
 
 	"pihole/api"
 	"pihole/hub"
+
+	"github.com/golang/glog"
 )
 
 func main() {
@@ -15,8 +16,9 @@ func main() {
 	h := hub.NewHub()
 
 	go func() {
-		log.Panic(api.ListenAndServe(api.DefaultAddr, h))
+		glog.Fatal(api.ListenAndServe(api.DefaultAddr, h))
 	}()
 
-	log.Panic(http.ListenAndServe(*flagAddr, h))
+	glog.Infof("Web: %s", *flagAddr)
+	glog.Fatal(http.ListenAndServe(*flagAddr, h))
 }

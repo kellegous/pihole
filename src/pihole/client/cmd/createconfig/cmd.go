@@ -3,11 +3,12 @@ package createconfig
 import (
 	"flag"
 	"fmt"
-	"log"
 	"net/url"
 	"os"
 
 	"pihole/client/config"
+
+	"github.com/golang/glog"
 )
 
 const bitsIntKey = 4096
@@ -50,16 +51,16 @@ func Main(args []string) {
 
 	var cfg config.Config
 	if err := create(&cfg, args[0], args[1], args[2:]); err != nil {
-		log.Panic(err)
+		glog.Fatal(err)
 	}
 
 	if err := cfg.Create(*flagConf); err != nil {
-		log.Panic(err)
+		glog.Fatal(err)
 	}
 
 	pub, err := cfg.PublicKey()
 	if err != nil {
-		log.Panic(err)
+		glog.Fatal(err)
 	}
 
 	fmt.Println(pub)

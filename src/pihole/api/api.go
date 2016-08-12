@@ -10,6 +10,7 @@ import (
 
 	"pihole/hub"
 
+	"github.com/golang/glog"
 	"google.golang.org/grpc"
 )
 
@@ -21,12 +22,17 @@ type api struct {
 }
 
 type proxy struct {
-	p *httputil.ReverseProxy
-	c chan string
+	p  *httputil.ReverseProxy
+	c  chan string
+	id string
 }
 
 func (c *proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	c.p.ServeHTTP(w, r)
+}
+
+func (c *proxy) ID() string {
+	return c.id
 }
 
 func (a *api) Register(s Api_RegisterServer) error {
@@ -41,8 +47,9 @@ func (a *api) Register(s Api_RegisterServer) error {
 	}
 
 	c := proxy{
-		p: httputil.NewSingleHostReverseProxy(u),
-		c: make(chan string, 10),
+		p:  httputil.NewSingleHostReverseProxy(u),
+		c:  make(chan string, 10),
+		id: r.Id,
 	}
 
 	for _, host := range r.Hosts {
@@ -81,6 +88,8 @@ func ListenAndServe(addr string, h *hub.Hub) error {
 
 	s := grpc.NewServer()
 	RegisterApiServer(s, &api{h: h})
+
+	glog.Infof("Api: %s", addr)
 	return s.Serve(l)
 }
 

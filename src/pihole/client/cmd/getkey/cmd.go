@@ -3,9 +3,10 @@ package getkey
 import (
 	"flag"
 	"fmt"
-	"log"
 
 	"pihole/client/config"
+
+	"github.com/golang/glog"
 )
 
 // Name ...
@@ -19,12 +20,12 @@ func Main(args []string) {
 
 	var cfg config.Config
 	if err := cfg.Read(*flagConf); err != nil {
-		log.Panic(err)
+		glog.Fatal(err)
 	}
 
 	pub, err := cfg.PublicKey()
 	if err != nil {
-		log.Panic(err)
+		glog.Fatal(err)
 	}
 
 	fmt.Println(pub)
