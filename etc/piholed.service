@@ -3,7 +3,7 @@ Description=Pihole Proxy Server
 After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/piholed
+ExecStart=/usr/local/bin/piholed --logtostderr
 
 [Install]
 WantedBy=multi-user.target
