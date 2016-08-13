@@ -1,5 +1,4 @@
-# PiHole
-## Serve web sites from your home network.
+# PiHole: Serve web sites from your home network.
 
 ### Why I created this.
 
