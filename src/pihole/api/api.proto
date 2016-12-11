@@ -4,6 +4,7 @@ package api;
 
 service Api {
   rpc Register (stream RegisterReq) returns (stream RegisterRes) {}
+  rpc Ping(PingReq) returns (PingRes) {}
 }
 
 message RegisterReq {
@@ -15,4 +16,12 @@ message RegisterReq {
 
 message RegisterRes {
   string message = 1;
+}
+
+message PingReq {
+	int64 id = 1;
+}
+
+message PingRes {
+	int64 id = 1;
 }

@@ -11,6 +11,7 @@ import (
 	"pihole/hub"
 
 	"github.com/golang/glog"
+	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
 
@@ -33,6 +34,12 @@ func (c *proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (c *proxy) ID() string {
 	return c.id
+}
+
+func (a *api) Ping(ctx context.Context, req *PingReq) (*PingRes, error) {
+	return &PingRes{
+		Id: req.Id,
+	}, nil
 }
 
 func (a *api) Register(s Api_RegisterServer) error {

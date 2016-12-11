@@ -28,10 +28,6 @@ TARGS = [
 	"bin/#{DESC}/piholed"
 ]
 
-task :atom do
-	sh 'atom', '.'
-end
-
 task :subl do
 	sh 'subl', '.'
 end

@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
+	"time"
 
 	"pihole/api"
 	"pihole/client/config"
@@ -55,6 +56,20 @@ func register(c *ssh.Client, cfg *config.Config, addr string) error {
 	}); err != nil {
 		return err
 	}
+
+	go func() {
+		for i := 1; ; i++ {
+			ctx, _ := context.WithTimeout(
+				context.Background(),
+				10*time.Second)
+			if _, err := ac.Ping(ctx, &api.PingReq{int64(i)}); err != nil {
+				cc.Close()
+				return
+			}
+
+			time.Sleep(5 * time.Second)
+		}
+	}()
 
 	for {
 		m, err := s.Recv()
