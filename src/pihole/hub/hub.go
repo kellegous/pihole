@@ -42,6 +42,11 @@ func (h *Hub) Unregister(host string) {
 	defer h.lck.Unlock()
 
 	hd := h.routes[host]
+	if hd == nil {
+		glog.Warningf("Attempt to unregister %s, but not registered.", host)
+		return
+	}
+
 	glog.Infof("Unregistered: %s as %s", hd.ID(), host)
 
 	delete(h.routes, host)
