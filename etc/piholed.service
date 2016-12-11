@@ -4,6 +4,7 @@ After=network.target
 
 [Service]
 ExecStart=/usr/local/bin/piholed --logtostderr
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

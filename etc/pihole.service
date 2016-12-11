@@ -5,6 +5,7 @@ After=network.target
 [Service]
 ExecStart=/usr/local/bin/pihole --conf=/etc/pihole --logtostderr
 User=www-data
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
