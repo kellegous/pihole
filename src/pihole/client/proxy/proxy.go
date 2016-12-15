@@ -58,12 +58,12 @@ func register(c *ssh.Client, cfg *config.Config, addr string) error {
 	}
 
 	go func() {
+		defer c.Close()
 		for i := 1; ; i++ {
 			ctx, _ := context.WithTimeout(
 				context.Background(),
 				10*time.Second)
-			if _, err := ac.Ping(ctx, &api.PingReq{int64(i)}); err != nil {
-				cc.Close()
+			if _, err := ac.Ping(ctx, &api.PingReq{Id: int64(i)}); err != nil {
 				return
 			}
 
@@ -104,6 +104,7 @@ func ConnectAndServe(cfg *config.Config) error {
 	if err != nil {
 		return err
 	}
+	defer l.Close()
 
 	ch := make(chan error, 1)
 
