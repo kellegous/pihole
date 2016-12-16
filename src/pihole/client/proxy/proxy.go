@@ -59,11 +59,14 @@ func register(c *ssh.Client, cfg *config.Config, addr string) error {
 
 	go func() {
 		defer c.Close()
+		defer cc.Close()
+
 		for i := 1; ; i++ {
 			ctx, _ := context.WithTimeout(
 				context.Background(),
 				10*time.Second)
 			if _, err := ac.Ping(ctx, &api.PingReq{Id: int64(i)}); err != nil {
+				glog.Infof("ping failed: %s", err)
 				return
 			}
 
