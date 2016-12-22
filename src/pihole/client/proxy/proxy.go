@@ -92,7 +92,8 @@ func ConnectAndServe(cfg *config.Config) error {
 	}
 
 	c, err := ssh.Dial("tcp", cfg.Hub.Addr, &ssh.ClientConfig{
-		User: cfg.Hub.User,
+		User:    cfg.Hub.User,
+		Timeout: 30 * time.Second,
 		Auth: []ssh.AuthMethod{
 			auth,
 		}})

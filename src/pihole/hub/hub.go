@@ -37,13 +37,13 @@ func (h *Hub) Register(host string, hd Proxy) error {
 }
 
 // Unregister ...
-func (h *Hub) Unregister(host string) {
+func (h *Hub) Unregister(host string, exp Proxy) {
 	h.lck.Lock()
 	defer h.lck.Unlock()
 
 	hd := h.routes[host]
-	if hd == nil {
-		glog.Warningf("Attempt to unregister %s, but not registered.", host)
+	if hd != exp {
+		glog.Warningf("Attempt to unregister %s with non-matching proxy.", host)
 		return
 	}
 

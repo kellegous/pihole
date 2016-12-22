@@ -24,6 +24,7 @@ func Main(conf string, args []string) {
 			glog.Error(err)
 		}
 
+		glog.Infoln("reconnecting in 10 secs...")
 		time.Sleep(10 * time.Second)
 	}
 }

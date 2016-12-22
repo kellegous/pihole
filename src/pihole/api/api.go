@@ -61,7 +61,7 @@ func (a *api) Register(s Api_RegisterServer) error {
 
 	for _, host := range r.Hosts {
 		a.h.Register(host, &c)
-		defer a.h.Unregister(host)
+		defer a.h.Unregister(host, &c)
 	}
 
 	ch := make(chan error, 1)
