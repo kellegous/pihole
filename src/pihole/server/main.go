@@ -4,24 +4,35 @@ import (
 	"flag"
 	"net/http"
 
+	"go.uber.org/zap"
+
 	"pihole/api"
 	"pihole/hub"
 	"pihole/logging"
-
-	"github.com/golang/glog"
 )
 
 func main() {
 	flagAddr := flag.String("addr", ":http", "")
 	flag.Parse()
+
+	if err := logging.Setup(); err != nil {
+		panic(err)
+	}
+
 	h := hub.NewHub()
 
 	go func() {
-		glog.Fatal(api.ListenAndServe(api.DefaultAddr, h))
+		if err := api.ListenAndServe(api.DefaultAddr, h); err != nil {
+			zap.L().Fatal("unable to listen and serve for api",
+				zap.Error(err))
+		}
 	}()
 
-	glog.Infof("Web: %s", *flagAddr)
-	glog.Fatal(http.ListenAndServe(
-		*flagAddr,
-		logging.WithLog(h)))
+	zap.L().Info("web started",
+		zap.String("address", *flagAddr))
+
+	if err := http.ListenAndServe(*flagAddr, logging.WithLog(h)); err != nil {
+		zap.L().Fatal("unable to listen and serve for web",
+			zap.Error(err))
+	}
 }

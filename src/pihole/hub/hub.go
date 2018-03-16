@@ -4,9 +4,10 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/golang/glog"
+	"go.uber.org/zap"
 )
 
+// Proxy ...
 type Proxy interface {
 	http.Handler
 	ID() string
@@ -30,7 +31,9 @@ func (h *Hub) Register(host string, hd Proxy) error {
 	h.lck.Lock()
 	defer h.lck.Unlock()
 
-	glog.Infof("Registered: %s as %s", hd.ID(), host)
+	zap.L().Info("registered",
+		zap.String("id", hd.ID()),
+		zap.String("host", host))
 	h.routes[host] = hd
 
 	return nil
@@ -43,11 +46,14 @@ func (h *Hub) Unregister(host string, exp Proxy) {
 
 	hd := h.routes[host]
 	if hd != exp {
-		glog.Warningf("Attempt to unregister %s with non-matching proxy.", host)
+		zap.L().Warn("unregister with non-matching proxy",
+			zap.String("host", host))
 		return
 	}
 
-	glog.Infof("Unregistered: %s as %s", hd.ID(), host)
+	zap.L().Info("unregistered",
+		zap.String("id", hd.ID()),
+		zap.String("host", host))
 
 	delete(h.routes, host)
 }

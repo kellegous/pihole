@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"pihole/logging"
 
 	"pihole/client/cmd/connect"
 	"pihole/client/cmd/createconfig"
@@ -14,6 +15,10 @@ func main() {
 		"pihole",
 		"")
 	flag.Parse()
+
+	if err := logging.Setup(); err != nil {
+		panic(err)
+	}
 
 	args := flag.Args()
 

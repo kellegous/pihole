@@ -3,9 +3,9 @@ package getkey
 import (
 	"fmt"
 
-	"pihole/client/config"
+	"go.uber.org/zap"
 
-	"github.com/golang/glog"
+	"pihole/client/config"
 )
 
 // Name ...
@@ -15,12 +15,15 @@ const Name = "get-key"
 func Main(conf string, args []string) {
 	var cfg config.Config
 	if err := cfg.Read(conf); err != nil {
-		glog.Fatal(err)
+		zap.L().Fatal("unable to read config",
+			zap.String("filename", conf),
+			zap.Error(err))
 	}
 
 	pub, err := cfg.PublicKey()
 	if err != nil {
-		glog.Fatal(err)
+		zap.L().Fatal("unable to get public key",
+			zap.Error(err))
 	}
 
 	fmt.Println(pub)

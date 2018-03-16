@@ -3,7 +3,7 @@ package logging
 import (
 	"net/http"
 
-	"github.com/golang/glog"
+	"go.uber.org/zap"
 )
 
 type response struct {
@@ -18,12 +18,12 @@ func (r *response) WriteHeader(status int) {
 }
 
 func (r *response) log() {
-	glog.Infof("addr=%s code=%d method=%s host=%s uri=%s",
-		r.r.RemoteAddr,
-		r.s,
-		r.r.Method,
-		r.r.Host,
-		r.r.RequestURI)
+	zap.L().Info("web response",
+		zap.String("addr", r.r.RemoteAddr),
+		zap.Int("code", r.s),
+		zap.String("method", r.r.Method),
+		zap.String("host", r.r.Host),
+		zap.String("uri", r.r.RequestURI))
 }
 
 // WithLog ...
@@ -36,4 +36,22 @@ func WithLog(h http.Handler) http.Handler {
 		defer res.log()
 		h.ServeHTTP(&res, r)
 	})
+}
+
+// MustSetup ...
+func MustSetup() {
+	if err := Setup(); err != nil {
+		panic(err)
+	}
+}
+
+// Setup ...
+func Setup() error {
+	l, err := zap.NewProduction()
+	if err != nil {
+		return err
+	}
+
+	zap.ReplaceGlobals(l)
+	return nil
 }

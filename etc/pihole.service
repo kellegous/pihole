@@ -3,7 +3,7 @@ Description=Pihole Proxy Client
 After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/pihole --conf=/etc/pihole --logtostderr
+ExecStart=/usr/local/bin/pihole --conf=/etc/pihole
 User=www-data
 Restart=always
 

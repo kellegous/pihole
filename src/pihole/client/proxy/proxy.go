@@ -2,6 +2,7 @@ package proxy
 
 import (
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/http/httputil"
 	"time"
@@ -10,18 +11,13 @@ import (
 	"pihole/client/config"
 	"pihole/logging"
 
-	"github.com/golang/glog"
+	"go.uber.org/zap"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/net/context"
 )
 
-func keysFrom(cfg *config.Config) (ssh.AuthMethod, error) {
-	prv, err := ioutil.ReadFile(cfg.PrivateKey())
-	if err != nil {
-		return nil, err
-	}
-
-	sgn, err := ssh.ParsePrivateKey(prv)
+func sshAuthMethod(key []byte) (ssh.AuthMethod, error) {
+	sgn, err := ssh.ParsePrivateKey(key)
 	if err != nil {
 		return nil, err
 	}
@@ -29,8 +25,8 @@ func keysFrom(cfg *config.Config) (ssh.AuthMethod, error) {
 	return ssh.PublicKeys(sgn), nil
 }
 
-func register(c *ssh.Client, cfg *config.Config, addr string) error {
-	t, err := c.Dial("tcp", api.DefaultAddr)
+func register(opts *Options, c *ssh.Client, addr string) error {
+	t, err := c.Dial("tcp", opts.APIAddr)
 	if err != nil {
 		return err
 	}
@@ -50,9 +46,9 @@ func register(c *ssh.Client, cfg *config.Config, addr string) error {
 	}
 
 	if err := s.Send(&api.RegisterReq{
-		Hosts: cfg.Hosts,
+		Hosts: opts.ClientHosts,
 		Addr:  addr,
-		Id:    cfg.ID,
+		Id:    opts.ClientID,
 	}); err != nil {
 		return err
 	}
@@ -65,8 +61,11 @@ func register(c *ssh.Client, cfg *config.Config, addr string) error {
 			ctx, _ := context.WithTimeout(
 				context.Background(),
 				10*time.Second)
-			if _, err := ac.Ping(ctx, &api.PingReq{Id: int64(i)}); err != nil {
-				glog.Infof("ping failed: %s", err)
+			if _, err := ac.Ping(ctx, &api.PingReq{
+				Id: int64(i),
+			}); err != nil {
+				zap.L().Error("ping failed",
+					zap.Error(err))
 				return
 			}
 
@@ -80,20 +79,30 @@ func register(c *ssh.Client, cfg *config.Config, addr string) error {
 			return err
 		}
 
-		glog.Infof("msg=%s", m)
+		zap.L().Info("message",
+			zap.String("msg", m.String()))
 	}
 }
 
 // ConnectAndServe ...
-func ConnectAndServe(cfg *config.Config) error {
-	auth, err := keysFrom(cfg)
+func ConnectAndServe(
+	opts *Options,
+	h http.Handler) error {
+	auth, err := sshAuthMethod(opts.SSHPrivateKey)
 	if err != nil {
 		return err
 	}
 
-	c, err := ssh.Dial("tcp", cfg.Hub.Addr, &ssh.ClientConfig{
-		User:    cfg.Hub.User,
+	c, err := ssh.Dial("tcp", opts.SSHAddr, &ssh.ClientConfig{
+		User:    opts.SSHUser,
 		Timeout: 30 * time.Second,
+		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
+			zap.L().Info("host key callback",
+				zap.String("host", hostname),
+				zap.String("addr", remote.String()),
+				zap.String("key-type", key.Type()))
+			return nil
+		},
 		Auth: []ssh.AuthMethod{
 			auth,
 		}})
@@ -102,7 +111,8 @@ func ConnectAndServe(cfg *config.Config) error {
 	}
 	defer c.Close()
 
-	glog.Infof("Connected to %s", cfg.Hub.Addr)
+	zap.L().Info("connected",
+		zap.String("to", opts.SSHAddr))
 
 	l, err := c.Listen("tcp", "localhost:0")
 	if err != nil {
@@ -114,16 +124,33 @@ func ConnectAndServe(cfg *config.Config) error {
 
 	go func() {
 		srv := http.Server{
-			Handler: logging.WithLog(
-				httputil.NewSingleHostReverseProxy(cfg.ToURL)),
+			Handler: h,
 		}
 
 		ch <- srv.Serve(l)
 	}()
 
 	go func() {
-		ch <- register(c, cfg, l.Addr().String())
+		ch <- register(opts, c, l.Addr().String())
 	}()
 
 	return <-ch
+}
+
+// ConnectAndServeConfig ...
+func ConnectAndServeConfig(cfg *config.Config) error {
+	key, err := ioutil.ReadFile(cfg.PrivateKey())
+	if err != nil {
+		return err
+	}
+
+	return ConnectAndServe(&Options{
+		SSHAddr:       cfg.Hub.Addr,
+		SSHUser:       cfg.Hub.User,
+		SSHPrivateKey: key,
+		APIAddr:       api.DefaultAddr,
+		ClientHosts:   cfg.Hosts,
+		ClientID:      cfg.ID,
+	}, logging.WithLog(
+		httputil.NewSingleHostReverseProxy(cfg.ToURL)))
 }

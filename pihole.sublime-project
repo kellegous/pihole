@@ -1,0 +1,15 @@
+
+{
+    "settings": {
+        "GoSublime": {
+            "env": {
+            	"GOPATH": "/Users/knorton/Documents/2018/03/pihole"
+            }
+        }
+    },
+    "folders": [
+    	{
+    		"path" : "."
+    	}
+    ]
+}

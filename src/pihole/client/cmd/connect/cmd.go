@@ -3,28 +3,35 @@ package connect
 import (
 	"time"
 
+	"go.uber.org/zap"
+
 	"pihole/client/config"
 	"pihole/client/proxy"
-
-	"github.com/golang/glog"
 )
 
 // Name ...
 const Name = "connect"
 
+const reconnectDelay = 10 * time.Second
+
 // Main ...
 func Main(conf string, args []string) {
 	var cfg config.Config
 	if err := cfg.Read(conf); err != nil {
-		glog.Fatal(err)
+		zap.L().Fatal("unable to read config",
+			zap.String("filename", conf),
+			zap.Error(err))
 	}
 
 	for {
-		if err := proxy.ConnectAndServe(&cfg); err != nil {
-			glog.Error(err)
+		if err := proxy.ConnectAndServeConfig(&cfg); err != nil {
+			zap.L().Error("client error",
+				zap.Error(err))
 		}
 
-		glog.Infoln("reconnecting in 10 secs...")
-		time.Sleep(10 * time.Second)
+		zap.L().Info("reconnecting",
+			zap.Duration("delay", reconnectDelay),
+			zap.Time("at", time.Now().Add(reconnectDelay)))
+		time.Sleep(reconnectDelay)
 	}
 }

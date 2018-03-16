@@ -5,9 +5,9 @@ import (
 	"net/url"
 	"os"
 
-	"pihole/client/config"
+	"go.uber.org/zap"
 
-	"github.com/golang/glog"
+	"pihole/client/config"
 )
 
 const bitsIntKey = 4096
@@ -46,16 +46,19 @@ func Main(conf string, args []string) {
 
 	var cfg config.Config
 	if err := create(&cfg, args[0], args[1], args[2:]); err != nil {
-		glog.Fatal(err)
+		zap.L().Fatal("unable to create config",
+			zap.Error(err))
 	}
 
 	if err := cfg.Create(conf); err != nil {
-		glog.Fatal(err)
+		zap.L().Fatal("unable to create config",
+			zap.Error(err))
 	}
 
 	pub, err := cfg.PublicKey()
 	if err != nil {
-		glog.Fatal(err)
+		zap.L().Fatal("unable to load public key",
+			zap.Error(err))
 	}
 
 	fmt.Println(pub)

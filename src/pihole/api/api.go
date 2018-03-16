@@ -8,9 +8,10 @@ import (
 	"net/url"
 	"time"
 
+	"go.uber.org/zap"
+
 	"pihole/hub"
 
-	"github.com/golang/glog"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
@@ -96,7 +97,9 @@ func ListenAndServe(addr string, h *hub.Hub) error {
 	s := grpc.NewServer()
 	RegisterApiServer(s, &api{h: h})
 
-	glog.Infof("Api: %s", addr)
+	zap.L().Info("api started",
+		zap.String("addr", addr))
+
 	return s.Serve(l)
 }
 
