@@ -20,6 +20,12 @@
   version = "v1.0.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/kellegous/buildname"
+  packages = ["."]
+  revision = "588c1771e0b6349befa12624a296b2045d2c2e7d"
+
+[[projects]]
   name = "go.uber.org/atomic"
   packages = ["."]
   revision = "8474b86a5a6f79c443ce4b2992817ff32cf208b8"
@@ -131,6 +137,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "2622de301065e799ea7fd58c6b372816079b6217ba6b20f6b80c759effd26af1"
+  inputs-digest = "4c2b04801d729cf047697e8a03b7e61f9eca39f6f46dc1553f5639f9b373a7c3"
   solver-name = "gps-cdcl"
   solver-version = 1

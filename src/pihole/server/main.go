@@ -15,9 +15,7 @@ func main() {
 	flagAddr := flag.String("addr", ":http", "")
 	flag.Parse()
 
-	if err := logging.Setup(); err != nil {
-		panic(err)
-	}
+	logging.MustSetup()
 
 	h := hub.NewHub()
 

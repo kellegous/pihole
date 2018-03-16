@@ -4,6 +4,8 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
+
+	"pihole/build"
 	"pihole/deploy/client"
 	"pihole/deploy/config"
 	"pihole/deploy/server"
@@ -45,11 +47,10 @@ func main() {
 			zap.String("path", os.Args[0]))
 	}
 
-	zap.L().Info("setup",
-		zap.String("conf", *flagConf),
-		zap.Bool("to-clients", *flagToClients),
-		zap.Bool("to-servers", *flagToServers),
-		zap.String("root", root))
+	zap.L().Info("deploying",
+		zap.String("sha", build.SHA),
+		zap.String("ref", build.Ref),
+		zap.String("name", build.Name()))
 
 	var cfg config.Info
 	if err := cfg.ReadFile(*flagConf); err != nil {
@@ -57,10 +58,6 @@ func main() {
 			zap.String("filename", *flagConf),
 			zap.Error(err))
 	}
-
-	zap.L().Info("config loaded",
-		zap.Int("servers", len(cfg.Servers)),
-		zap.Int("clients", len(cfg.Clients)))
 
 	if *flagToServers {
 		for name, build := range cfg.Servers {

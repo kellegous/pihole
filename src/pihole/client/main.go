@@ -7,6 +7,7 @@ import (
 	"pihole/client/cmd/connect"
 	"pihole/client/cmd/createconfig"
 	"pihole/client/cmd/getkey"
+	"pihole/client/cmd/version"
 )
 
 func main() {
@@ -16,9 +17,7 @@ func main() {
 		"")
 	flag.Parse()
 
-	if err := logging.Setup(); err != nil {
-		panic(err)
-	}
+	logging.MustSetup()
 
 	args := flag.Args()
 
@@ -34,5 +33,7 @@ func main() {
 		createconfig.Main(*flagConf, args[1:])
 	case getkey.Name:
 		getkey.Main(*flagConf, args[1:])
+	case version.Name:
+		version.Main(*flagConf, args[1:])
 	}
 }
