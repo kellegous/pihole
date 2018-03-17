@@ -3,7 +3,7 @@ package version
 import (
 	"fmt"
 
-	"pihole/build"
+	"github.com/kellegous/pihole/build"
 )
 
 // Name ...

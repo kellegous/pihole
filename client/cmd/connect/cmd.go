@@ -3,10 +3,10 @@ package connect
 import (
 	"time"
 
-	"go.uber.org/zap"
+	"github.com/kellegous/pihole/client/config"
+	"github.com/kellegous/pihole/client/proxy"
 
-	"pihole/client/config"
-	"pihole/client/proxy"
+	"go.uber.org/zap"
 )
 
 // Name ...

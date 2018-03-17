@@ -17,9 +17,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"golang.org/x/crypto/ssh"
-
 	"github.com/BurntSushi/toml"
+	"golang.org/x/crypto/ssh"
 )
 
 const (

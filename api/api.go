@@ -8,10 +8,9 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/kellegous/pihole/hub"
+
 	"go.uber.org/zap"
-
-	"pihole/hub"
-
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )

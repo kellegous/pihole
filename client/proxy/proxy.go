@@ -7,9 +7,9 @@ import (
 	"net/http/httputil"
 	"time"
 
-	"pihole/api"
-	"pihole/client/config"
-	"pihole/logging"
+	"github.com/kellegous/pihole/api"
+	"github.com/kellegous/pihole/client/config"
+	"github.com/kellegous/pihole/logging"
 
 	"go.uber.org/zap"
 	"golang.org/x/crypto/ssh"

@@ -5,9 +5,9 @@ import (
 	"net/url"
 	"os"
 
-	"go.uber.org/zap"
+	"github.com/kellegous/pihole/client/config"
 
-	"pihole/client/config"
+	"go.uber.org/zap"
 )
 
 const bitsIntKey = 4096

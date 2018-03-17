@@ -6,9 +6,9 @@ import (
 
 	"go.uber.org/zap"
 
-	"pihole/api"
-	"pihole/hub"
-	"pihole/logging"
+	"github.com/kellegous/pihole/api"
+	"github.com/kellegous/pihole/hub"
+	"github.com/kellegous/pihole/logging"
 )
 
 func main() {

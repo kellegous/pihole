@@ -1,5 +1,5 @@
 export PATH := $(shell pwd)/.build/bin:$(PATH)
-export GOPATH := $(shell pwd)
+export GOPATH ?= $(shell cd ../../../.. && pwd)
 
 export GOOS ?= $(shell go env GOOS)
 export GOARCH ?= $(shell go env GOARCH)
@@ -16,17 +16,17 @@ ALL: bin/$(DESC)/deploy bin/$(DESC)/client bin/$(DESC)/server
 .build/bin/protoc-gen-go:
 	GOPATH=$(shell pwd)/.build go get github.com/golang/protobuf/...
 
-src/pihole/api/api.pb.go: src/pihole/api/api.proto .build/bin/protoc-gen-go
-	protoc -Isrc/pihole $< --go_out=plugins=grpc:src/pihole
+api/api.pb.go: api/api.proto .build/bin/protoc-gen-go
+	protoc -I. $< --go_out=plugins=grpc:.
 
-bin/$(DESC)/client: src/pihole/api/api.pb.go $(shell find . -name '*.go')
-	go build $(BUILD_FLAGS) -o $@ pihole/client
+bin/$(DESC)/client: api/api.pb.go $(shell find . -name '*.go')
+	go build $(BUILD_FLAGS) -o $@ github.com/kellegous/pihole/client
 
-bin/$(DESC)/server: src/pihole/api/api.pb.go $(shell find . -name '*.go')
-	go build $(BUILD_FLAGS) -o $@ pihole/server
+bin/$(DESC)/server: api/api.pb.go $(shell find . -name '*.go')
+	go build $(BUILD_FLAGS) -o $@ github.com/kellegous/pihole/server
 
-bin/$(DESC)/deploy: $(shell find src/pihole/deploy -name '*.go')
-	go build $(BUILD_FLAGS) -o $@ pihole/deploy
+bin/$(DESC)/deploy: $(shell find deploy -name '*.go')
+	go build $(BUILD_FLAGS) -o $@ github.com/kellegous/pihole/deploy
 
 deploy: bin/$(DESC)/deploy
 	bin/$(DESC)/deploy

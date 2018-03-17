@@ -2,12 +2,12 @@ package main
 
 import (
 	"flag"
-	"pihole/logging"
 
-	"pihole/client/cmd/connect"
-	"pihole/client/cmd/createconfig"
-	"pihole/client/cmd/getkey"
-	"pihole/client/cmd/version"
+	"github.com/kellegous/pihole/client/cmd/connect"
+	"github.com/kellegous/pihole/client/cmd/createconfig"
+	"github.com/kellegous/pihole/client/cmd/getkey"
+	"github.com/kellegous/pihole/client/cmd/version"
+	"github.com/kellegous/pihole/logging"
 )
 
 func main() {
