@@ -9,7 +9,7 @@ DESC := $(GOOS)-$(GOARCH)
 SHA := $(shell git rev-parse HEAD)
 REF := $(shell git rev-parse --abbrev-ref HEAD)
 
-BUILD_FLAGS := -ldflags "-X pihole/build.SHA=$(SHA) -X pihole/build.Ref=$(REF)"
+BUILD_FLAGS := -ldflags "-X github.com/kellegous/pihole/build.SHA=$(SHA) -X github.com/kellegous/pihole/build.Ref=$(REF)"
 
 ALL: bin/$(DESC)/deploy bin/$(DESC)/client bin/$(DESC)/server
 
